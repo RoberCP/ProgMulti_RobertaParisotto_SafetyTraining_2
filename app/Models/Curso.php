@@ -2,14 +2,31 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Curso extends Model
 {
-    protected $fillable = ['idCurso', 'nomeCurso', 'cargaHora', 'instrutor', 'prazoRecicla', 'status'];
+    use HasFactory;
 
-    public function users()
+    protected $primaryKey = 'IdCurso';
+
+    protected $fillable = [
+        'nomeCurso',
+        'cargaHora',
+        'instrutor',
+        'prazoRecicla',
+        'status',
+        'empresa_id',
+    ];
+
+    public function empresa()
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsTo(Empresa::class, 'empresa_id');
+    }
+
+    public function funcionarios()
+    {
+        return $this->belongsToMany(Funcionario::class, 'curso_funcionario', 'curso_id', 'funcionario_id');
     }
 }
