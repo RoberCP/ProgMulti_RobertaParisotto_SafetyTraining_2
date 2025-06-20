@@ -30,7 +30,7 @@ class EmpresaManagement extends Component
         if (Auth::user()->is_admin) {
             $this->empresas = Empresa::with('users')->get();
         } else {
-            $this->empresas = Auth::user()->empresas()->with('users')->get();
+            $this->empresas = Auth::user()->empresas()->with('users')->get(); // erro? A tela funciona normalmente, mas o erro é exibido no console
         }
     }
 

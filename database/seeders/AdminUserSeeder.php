@@ -16,4 +16,5 @@ class AdminUserSeeder extends Seeder
             'password' => Hash::make('senha123'),
         ]);
     }
+
 }
