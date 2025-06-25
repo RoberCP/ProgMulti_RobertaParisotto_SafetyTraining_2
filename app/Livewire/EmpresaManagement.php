@@ -38,7 +38,7 @@ class EmpresaManagement extends Component
     {
         $this->validate([
             'razao_social' => 'required|string|min:3',
-            'cnpj' => 'required|string|unique:empresas,cnpj,' . $this->empresa_id,
+            'cnpj' => 'required|string|unique:empresas,cnpj,' . ($this->empresa_id ?: 'NULL'),
             'ramo' => 'required|string|min:3',
         ]);
 

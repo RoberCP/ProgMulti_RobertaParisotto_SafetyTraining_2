@@ -9,7 +9,10 @@ class Curso extends Model
 {
     use HasFactory;
 
+    protected $table = 'cursos';
     protected $primaryKey = 'IdCurso';
+    public $incrementing = true;
+    protected $keyType = 'int';
 
     protected $fillable = [
         'nomeCurso',

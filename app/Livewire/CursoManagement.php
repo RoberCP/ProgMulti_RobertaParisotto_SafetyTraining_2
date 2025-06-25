@@ -6,7 +6,7 @@ use Livewire\Component;
 use App\Models\Curso;
 use App\Models\Empresa;
 use Illuminate\Support\Facades\Auth;
-
+use App\Notifications\CursoAtualizadoNotification;
 class CursoManagement extends Component
 {
     public $cursos;
@@ -60,13 +60,16 @@ class CursoManagement extends Component
         ];
 
         if ($this->isEdit) {
-            Curso::findOrFail($this->curso_id)->update($data);
+            $curso = Curso::findOrFail($this->curso_id);
+            $curso->update($data);
             session()->flash('message', 'Curso atualizado com sucesso.');
         } else {
-            Curso::create($data);
+            $curso = Curso::create($data);
             session()->flash('message', 'Curso cadastrado com sucesso.');
         }
 
+        $this->notificarSeConcluido($curso);
+        
         $this->resetForm();
         $this->loadCursos();
     }
@@ -123,5 +126,24 @@ class CursoManagement extends Component
     public function render()
     {
         return view('livewire.curso-management');
+    }
+
+    public function notificarUsuarios(Curso $curso)
+    {
+        $usuarios = $curso->empresa->users;
+
+        foreach ($usuarios as $usuario) {
+            $usuario->notify(new CursoAtualizadoNotification($curso));
+        }
+    }
+
+    public function notificarSeConcluido(Curso $curso)
+    {
+        if ($curso->status === 'Concluído') {
+            $usuarios = $curso->empresa->users;
+            foreach ($usuarios as $usuario) {
+                $usuario->notify(new CursoAtualizadoNotification($curso));
+            }
+        }
     }
 }

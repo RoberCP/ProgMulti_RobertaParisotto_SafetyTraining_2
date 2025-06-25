@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,14 +10,16 @@ class Funcionario extends Model
     use HasFactory;
 
     protected $primaryKey = 'idFuncionario';
-
+    public $incrementing = true;
+    protected $keyType = 'int';
+    
     protected $fillable = [
         'idEmpresa',
         'nome',
         'cpf',
         'setor',
         'cargo',
-        'fk_Certificado_idCertificado',
+        'curso_id',
     ];
 
     public function empresa()
@@ -24,8 +27,8 @@ class Funcionario extends Model
         return $this->belongsTo(Empresa::class, 'idEmpresa');
     }
 
-    public function certificado()
+    public function curso()
     {
-        return $this->belongsTo(Certificado::class, 'fk_Certificado_idCertificado');
+        return $this->belongsTo(Curso::class, 'curso_id', 'IdCurso');
     }
 }

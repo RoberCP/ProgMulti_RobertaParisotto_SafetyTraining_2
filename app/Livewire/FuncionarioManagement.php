@@ -5,38 +5,39 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Funcionario;
 use App\Models\Empresa;
-use App\Models\Certificado;
+use App\Models\Curso;
 use Illuminate\Support\Facades\Auth;
 
 class FuncionarioManagement extends Component
 {
     public $funcionarios;
-    public $nome, $cpf, $setor, $cargo, $empresa_id, $certificado_id;
+    public $nome, $cpf, $setor, $cargo, $empresa_id, $curso_id;
     public $funcionario_id;
     public $isEdit = false;
     public $confirmingDelete = false;
     public $funcionarioIdToDelete;
 
     public $empresas = [];
-    public $certificados = [];
+    public $cursos = [];
 
     public function mount()
     {
         $this->loadFuncionarios();
+
         $this->empresas = Auth::user()->is_admin
             ? Empresa::all()
             : Auth::user()->empresas;
 
-        $this->certificados = Certificado::all();
+        $this->cursos = Curso::all();
     }
 
     public function loadFuncionarios()
     {
         if (Auth::user()->is_admin) {
-            $this->funcionarios = Funcionario::with(['empresa', 'certificado'])->get();
+            $this->funcionarios = Funcionario::with(['empresa', 'curso'])->get();
         } else {
             $empresaIds = Auth::user()->empresas->pluck('id');
-            $this->funcionarios = Funcionario::with(['empresa', 'certificado'])
+            $this->funcionarios = Funcionario::with(['empresa', 'curso'])
                 ->whereIn('idEmpresa', $empresaIds)
                 ->get();
         }
@@ -50,7 +51,7 @@ class FuncionarioManagement extends Component
             'setor' => 'required|string|min:2',
             'cargo' => 'required|string|min:2',
             'empresa_id' => 'required|exists:empresas,id',
-            'certificado_id' => 'nullable|exists:certificados,id',
+            'curso_id' => 'required|exists:cursos,IdCurso',
         ]);
 
         $data = [
@@ -59,7 +60,7 @@ class FuncionarioManagement extends Component
             'setor' => $this->setor,
             'cargo' => $this->cargo,
             'idEmpresa' => $this->empresa_id,
-            'fk_Certificado_idCertificado' => $this->certificado_id,
+            'curso_id' => $this->curso_id,
         ];
 
         if ($this->isEdit) {
@@ -82,13 +83,13 @@ class FuncionarioManagement extends Component
             abort(403);
         }
 
-        $this->funcionario_id = $funcionario->id;
+        $this->funcionario_id = $funcionario->idFuncionario;
         $this->nome = $funcionario->nome;
         $this->cpf = $funcionario->cpf;
         $this->setor = $funcionario->setor;
         $this->cargo = $funcionario->cargo;
         $this->empresa_id = $funcionario->idEmpresa;
-        $this->certificado_id = $funcionario->fk_Certificado_idCertificado;
+        $this->curso_id = $funcionario->curso_id;
         $this->isEdit = true;
     }
 
@@ -120,12 +121,15 @@ class FuncionarioManagement extends Component
         $this->setor = '';
         $this->cargo = '';
         $this->empresa_id = '';
-        $this->certificado_id = '';
+        $this->curso_id = '';
         $this->isEdit = false;
     }
 
     public function render()
     {
-        return view('livewire.funcionario-management');
+        return view('livewire.funcionario-management', [
+            'empresas' => $this->empresas,
+            'cursos' => $this->cursos,
+        ]);
     }
 }

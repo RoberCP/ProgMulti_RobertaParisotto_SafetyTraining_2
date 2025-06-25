@@ -44,13 +44,14 @@ class UserManagement extends Component
     {
         $this->validate([
             'name' => 'required|string|min:3',
-            'email' => 'required|email|unique:users,email,' . $this->user_id,
+            'email' => 'required|email|unique:users,email,' . ($this->user_id ?: 'NULL'),
             'password' => $this->isEdit ? 'nullable|min:8' : 'required|min:8',
         ]);
 
         $data = [
             'name' => $this->name,
             'email' => $this->email,
+            'is_admin' => false, // Garantir que o usuário sempre será auditor
         ];
 
         if ($this->password) {
@@ -63,6 +64,8 @@ class UserManagement extends Component
             User::create($data);
         }
 
+        session()->flash('message', $this->isEdit ? 'Usuário atualizado com sucesso.' : 'Usuário criado com sucesso.');
+        
         $this->resetForm();
         $this->loadUsers();
     }
@@ -76,7 +79,7 @@ class UserManagement extends Component
         $this->password = '';
         $this->isEdit = true;
     }
-
+                                
     public function resetForm()
     {
         $this->user_id = null;
@@ -84,12 +87,10 @@ class UserManagement extends Component
         $this->email = '';
         $this->password = '';
         $this->isEdit = false;
-    }
+    } 
 
     public function render()
     {
-        return view('livewire.user-management', [
-        'users' => User::all(),
-        ]);
+        return view('livewire.user-management');
     }
 }

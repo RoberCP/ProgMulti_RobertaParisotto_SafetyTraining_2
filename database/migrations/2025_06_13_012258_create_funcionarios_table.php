@@ -9,17 +9,16 @@ return new class extends Migration {
     {
         Schema::create('funcionarios', function (Blueprint $table) {
             $table->id('idFuncionario');
-            $table->unsignedBigInteger('idEmpresa');
+            $table->foreignId('idEmpresa')->constrained('empresas')->onDelete('cascade');
             $table->string('nome');
             $table->string('cpf')->unique();
             $table->string('setor');
             $table->string('cargo');
-            $table->unsignedBigInteger('fk_Certificado_idCertificado')->nullable(); // pode ser null se ainda não tiver certificado
-            $table->timestamps();
 
-            // Chaves estrangeiras
-            $table->foreign('idEmpresa')->references('id')->on('empresas')->onDelete('cascade');
-            $table->foreign('fk_Certificado_idCertificado')->references('id')->on('certificados')->onDelete('set null');
+            $table->unsignedBigInteger('curso_id');
+            $table->foreign('curso_id')->references('IdCurso')->on('cursos')->onDelete('cascade');
+
+            $table->timestamps();
         });
     }
 
@@ -28,5 +27,3 @@ return new class extends Migration {
         Schema::dropIfExists('funcionarios');
     }
 };
-
-

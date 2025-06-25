@@ -14,7 +14,9 @@ class AdminUserSeeder extends Seeder
             'name' => 'Roberta Admin',
             'email' => 'robertaparisotto.parisotto2@gmail.com',
             'password' => Hash::make('senha123'),
+            'is_admin' => true,
         ]);
     }
+    
 
 }
