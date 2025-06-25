@@ -59,7 +59,6 @@ class CertificadoManagement extends Component
         if ($curso) {
             $this->carga_horaria = $curso->cargaHora;
             $this->instrutor = $curso->instrutor;
-            $this->progresso = 'Não iniciado';
         }
     }
 
