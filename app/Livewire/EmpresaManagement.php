@@ -36,6 +36,11 @@ class EmpresaManagement extends Component
 
     public function save()
     {
+        
+        if (!Auth::user()->is_admin) {
+            abort(403);
+        }   
+
         $this->validate([
             'razao_social' => 'required|string|min:3',
             'cnpj' => 'required|string|unique:empresas,cnpj,' . ($this->empresa_id ?: 'NULL'),

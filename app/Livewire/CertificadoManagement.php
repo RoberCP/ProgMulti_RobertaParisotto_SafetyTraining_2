@@ -101,7 +101,10 @@ class CertificadoManagement extends Component
             session()->flash('message', 'Certificado atualizado com sucesso.');
         } else {
             $certificado = Certificado::create($data);
-            session()->flash('message', 'Certificado cadastrado com sucesso.');
+            Log::info('Certificado cadastrado com sucesso.', [
+                'instrutor' => $certificado->assinatura_instrutor_base64,
+                'funcionario' => $certificado->assinatura_funcionario_base64,
+            ]);
 
             // Envia a notificação por e-mail para o usuário atual
             $user = User::find(Auth::id());

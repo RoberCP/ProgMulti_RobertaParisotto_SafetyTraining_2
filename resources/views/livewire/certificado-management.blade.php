@@ -72,9 +72,8 @@
             </div>
         </div>
 
-        <input type="hidden" wire:model.defer="assinaturaInstrutorBase64" id="assinaturaInstrutorBase64">
-        <input type="hidden" wire:model.defer="assinaturaFuncionarioBase64" id="assinaturaFuncionarioBase64">
-
+        <input type="hidden" wire:model="assinaturaInstrutorBase64" id="assinaturaInstrutorBase64">
+        <input type="hidden" wire:model="assinaturaFuncionarioBase64" id="assinaturaFuncionarioBase64">
 
         <div class="flex gap-2 mt-2">
             <button type="submit" class="border border-green-600 text-green-600 font-semibold px-4 py-2 rounded hover:bg-green-50 transition">
@@ -167,12 +166,17 @@
 
             document.querySelector('form').addEventListener('submit', () => {
                 if (!padInstrutor.isEmpty()) {
-                    document.getElementById('assinaturaInstrutorBase64').value = padInstrutor.toDataURL();
+                    const base64 = padInstrutor.toDataURL();
+                    document.getElementById('assinaturaInstrutorBase64').value = base64;
+                    console.log('Assinatura do Instrutor:', base64);
                 }
                 if (!padFuncionario.isEmpty()) {
-                    document.getElementById('assinaturaFuncionarioBase64').value = padFuncionario.toDataURL();
+                    const base64 = padFuncionario.toDataURL();
+                    document.getElementById('assinaturaFuncionarioBase64').value = base64;
+                    console.log('Assinatura do Funcionário:', base64);
                 }
             });
+
         });
 
         function clearSignature(tipo) {

@@ -28,10 +28,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/funcionarios', FuncionarioManagement::class)->name('funcionarios');
     Route::get('/cursos', CursoManagement::class)->name('cursos');
     Route::get('/certificados', CertificadoManagement::class)->name('certificados');
-
-    Route::get('/certificado/{id}/pdf', [CertificadoPdfController::class, 'gerar'])
-        ->name('certificado.pdf')
-        ->middleware('auth');
+    Route::get('/certificado/pdf/{id}', [CertificadoPdfController::class, 'gerar'])->name('certificado.pdf');
 
 });
 

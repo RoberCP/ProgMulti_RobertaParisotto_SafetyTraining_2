@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Illuminate\Support\Facades\Hash;
 
@@ -13,6 +14,11 @@ class UserManagement extends Component
 
     public function confirmDelete($userId)
 {
+
+    if (!Auth::user()->is_admin) {
+        abort(403);
+    }
+    
     $this->confirmingDelete = true;
     $this->userIdToDelete = $userId;
 }
@@ -42,6 +48,11 @@ class UserManagement extends Component
 
     public function save()
     {
+
+        if (!Auth::user()->is_admin) {
+            abort(403);
+        }
+        
         $this->validate([
             'name' => 'required|string|min:3',
             'email' => 'required|email|unique:users,email,' . ($this->user_id ?: 'NULL'),
@@ -72,6 +83,11 @@ class UserManagement extends Component
 
     public function edit($id)
     {
+
+        if (!Auth::user()->is_admin) {
+            abort(403);
+        }
+
         $user = User::findOrFail($id);
         $this->user_id = $user->id;
         $this->name = $user->name;
@@ -82,6 +98,10 @@ class UserManagement extends Component
                                 
     public function resetForm()
     {
+        if (!Auth::user()->is_admin) {
+            abort(403);
+        }
+
         $this->user_id = null;
         $this->name = '';
         $this->email = '';
