@@ -24,4 +24,18 @@
         </div>
     </div>
 </body>
+<footer>
+    @if ($certificado->assinatura_instrutor)
+        <div style="margin-top: 30px;">
+            <p>Assinatura do Instrutor:</p>
+            <img src="{{ public_path('assinaturas/instrutor.png') }}" alt="Assinatura Instrutor" style="height: 80px;">
+        </div>
+    @endif
+
+    @if ($certificado->assinatura_funcionario)
+        <div style="margin-top: 30px;">
+            <p>Assinatura do Funcionário:</p>
+            <img src="{{ public_path('assinaturas/funcionario.png') }}" alt="Assinatura Funcionário" style="height: 80px;">
+        </div>
+    @endif
 </html>

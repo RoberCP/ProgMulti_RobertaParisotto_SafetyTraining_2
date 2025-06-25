@@ -6,7 +6,10 @@ use Livewire\Component;
 use App\Models\Certificado;
 use App\Models\Curso;
 use App\Models\Funcionario;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use App\Notifications\CertificadoCriadoNotification;
 
 class CertificadoManagement extends Component
 {
@@ -20,6 +23,9 @@ class CertificadoManagement extends Component
 
     public $cursos = [];
     public $funcionarios = [];
+
+    public $assinaturaInstrutorBase64;
+    public $assinaturaFuncionarioBase64;
 
     public function mount()
     {
@@ -72,6 +78,11 @@ class CertificadoManagement extends Component
             'progresso' => 'required|string',
         ]);
 
+        Log::info('Assinaturas recebidas', [
+            'instrutor' => $this->assinaturaInstrutorBase64,
+            'funcionario' => $this->assinaturaFuncionarioBase64,
+        ]);
+
         $data = [
             'idCurso' => $this->idCurso,
             'idFuncionario' => $this->idFuncionario,
@@ -81,14 +92,23 @@ class CertificadoManagement extends Component
             'progresso' => $this->progresso,
             'assinatura_instrutor' => $this->assinatura_instrutor,
             'assinatura_funcionario' => $this->assinatura_funcionario,
+            'assinatura_instrutor_base64' => $this->assinaturaInstrutorBase64,
+            'assinatura_funcionario_base64' => $this->assinaturaFuncionarioBase64,
         ];
 
         if ($this->isEdit) {
             Certificado::findOrFail($this->idCertificado)->update($data);
             session()->flash('message', 'Certificado atualizado com sucesso.');
         } else {
-            Certificado::create($data);
+            $certificado = Certificado::create($data);
             session()->flash('message', 'Certificado cadastrado com sucesso.');
+
+            // Envia a notificação por e-mail para o usuário atual
+            $user = User::find(Auth::id());
+            if ($user) {
+                $user->notify(new CertificadoCriadoNotification($certificado));
+}
+
         }
 
         $this->resetForm();

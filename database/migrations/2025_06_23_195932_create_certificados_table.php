@@ -25,6 +25,9 @@ return new class extends Migration
             $table->boolean('assinatura_instrutor')->default(false);
             $table->boolean('assinatura_funcionario')->default(false);
 
+            $table->longText('assinatura_instrutor_base64')->nullable();
+            $table->longText('assinatura_funcionario_base64')->nullable();
+
             $table->timestamps();
         });
     }

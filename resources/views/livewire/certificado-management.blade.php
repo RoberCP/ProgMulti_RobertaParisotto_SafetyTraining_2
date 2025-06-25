@@ -52,14 +52,29 @@
         <input wire:model="instrutor" type="text" placeholder="Instrutor" class="border border-gray-300 p-2 rounded w-full">
         <input wire:model="progresso" type="text" placeholder="Progresso" class="border border-gray-300 p-2 rounded w-full">
 
-        <div class="flex gap-4">
-            <label class="flex items-center">
-                <input type="checkbox" wire:model="assinatura_instrutor" class="mr-2"> Assinatura do instrutor
-            </label>
-            <label class="flex items-center">
-                <input type="checkbox" wire:model="assinatura_funcionario" class="mr-2"> Assinatura do funcionário
-            </label>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {{-- Assinatura do Instrutor --}}
+            <div>
+                <label class="block mb-1 font-semibold">Assinatura do Instrutor:</label>
+                <div class="border border-gray-300 rounded bg-white">
+                    <canvas id="canvasInstrutor" class="w-full h-40"></canvas>
+                </div>
+                <button type="button" onclick="clearSignature('instrutor')" class="mt-1 text-sm text-red-500 hover:underline">Limpar</button>
+            </div>
+
+            {{-- Assinatura do Funcionário --}}
+            <div>
+                <label class="block mb-1 font-semibold">Assinatura do Funcionário:</label>
+                <div class="border border-gray-300 rounded bg-white">
+                    <canvas id="canvasFuncionario" class="w-full h-40"></canvas>
+                </div>
+                <button type="button" onclick="clearSignature('funcionario')" class="mt-1 text-sm text-red-500 hover:underline">Limpar</button>
+            </div>
         </div>
+
+        <input type="hidden" wire:model.defer="assinaturaInstrutorBase64" id="assinaturaInstrutorBase64">
+        <input type="hidden" wire:model.defer="assinaturaFuncionarioBase64" id="assinaturaFuncionarioBase64">
+
 
         <div class="flex gap-2 mt-2">
             <button type="submit" class="border border-green-600 text-green-600 font-semibold px-4 py-2 rounded hover:bg-green-50 transition">
@@ -105,11 +120,8 @@
                     <td class="px-2 py-1 border space-x-2">
                         <button wire:click="edit({{ $certificado->idCertificado }})" class="border border-blue-600 text-blue-600 px-2 py-1 rounded hover:bg-blue-50">Editar</button>
                         <button wire:click="confirmDelete({{ $certificado->idCertificado }})" class="border border-red-600 text-red-600 px-2 py-1 rounded hover:bg-red-50">Excluir</button>
-                            <a href="{{ route('certificado.pdf', $certificado->idCertificado) }}" target="_blank"
-                                class="border border-green-600 text-green-600 px-2 py-1 rounded hover:bg-green-50">
-                                    PDF
-                            </a>
-
+                        <a href="{{ route('certificado.pdf', $certificado->idCertificado) }}" target="_blank"
+                            class="border border-green-600 text-green-600 px-2 py-1 rounded hover:bg-green-50">PDF</a>
                     </td>
                 </tr>
             @empty
@@ -119,4 +131,59 @@
             @endforelse
         </tbody>
     </table>
+
+    {{-- Script de assinatura --}}
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+    <script>
+        let padInstrutor, padFuncionario;
+
+        function resizeCanvas(canvas, pad) {
+            const ratio = window.devicePixelRatio || 1;
+            const styles = getComputedStyle(canvas);
+            const width = parseInt(styles.width);
+            const height = parseInt(styles.height);
+
+            canvas.width = width * ratio;
+            canvas.height = height * ratio;
+            canvas.getContext("2d").scale(ratio, ratio);
+            pad.clear();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvasInstrutor = document.getElementById('canvasInstrutor');
+            const canvasFuncionario = document.getElementById('canvasFuncionario');
+
+            padInstrutor = new SignaturePad(canvasInstrutor);
+            padFuncionario = new SignaturePad(canvasFuncionario);
+
+            resizeCanvas(canvasInstrutor, padInstrutor);
+            resizeCanvas(canvasFuncionario, padFuncionario);
+
+            // Reajusta o canvas se a tela for redimensionada
+            window.addEventListener('resize', () => {
+                resizeCanvas(canvasInstrutor, padInstrutor);
+                resizeCanvas(canvasFuncionario, padFuncionario);
+            });
+
+            document.querySelector('form').addEventListener('submit', () => {
+                if (!padInstrutor.isEmpty()) {
+                    document.getElementById('assinaturaInstrutorBase64').value = padInstrutor.toDataURL();
+                }
+                if (!padFuncionario.isEmpty()) {
+                    document.getElementById('assinaturaFuncionarioBase64').value = padFuncionario.toDataURL();
+                }
+            });
+        });
+
+        function clearSignature(tipo) {
+            if (tipo === 'instrutor') {
+                padInstrutor.clear();
+                document.getElementById('assinaturaInstrutorBase64').value = '';
+            } else {
+                padFuncionario.clear();
+                document.getElementById('assinaturaFuncionarioBase64').value = '';
+            }
+        }
+    </script>
+
 </div>
