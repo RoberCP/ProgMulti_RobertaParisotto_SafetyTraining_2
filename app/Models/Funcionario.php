@@ -31,4 +31,10 @@ class Funcionario extends Model
     {
         return $this->belongsTo(Curso::class, 'curso_id', 'IdCurso');
     }
+
+    public function certificados()
+    {
+        return $this->hasMany(Certificado::class, 'idFuncionario', 'idFuncionario');
+    }
+
 }

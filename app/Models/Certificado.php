@@ -9,18 +9,28 @@ class Certificado extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'idCertificado';
+    public $incrementing = true;
+    protected $keyType = 'int';
+
     protected $fillable = [
-        'nome',
+        'idCurso',
+        'idFuncionario',
+        'dataEmissao',
         'carga_horaria',
         'instrutor',
         'progresso',
-        'data_emissao',
-        'funcionario_id',
+        'assinatura_instrutor',
+        'assinatura_funcionario',
     ];
+
+    public function curso()
+    {
+        return $this->belongsTo(Curso::class, 'idCurso', 'IdCurso');
+    }
 
     public function funcionario()
     {
-        return $this->belongsTo(Funcionario::class);
+        return $this->belongsTo(Funcionario::class, 'idFuncionario', 'idFuncionario');
     }
 }
-

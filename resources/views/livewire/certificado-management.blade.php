@@ -43,7 +43,7 @@
         <select wire:model="idFuncionario" class="border border-gray-300 p-2 rounded w-full">
             <option value="">Selecione o funcionário</option>
             @foreach($funcionarios as $funcionario)
-                <option value="{{ $funcionario->id }}">{{ $funcionario->nome }}</option>
+                <option value="{{ $funcionario->idFuncionario }}">{{ $funcionario->nome }}</option>
             @endforeach
         </select>
 
@@ -105,6 +105,11 @@
                     <td class="px-2 py-1 border space-x-2">
                         <button wire:click="edit({{ $certificado->idCertificado }})" class="border border-blue-600 text-blue-600 px-2 py-1 rounded hover:bg-blue-50">Editar</button>
                         <button wire:click="confirmDelete({{ $certificado->idCertificado }})" class="border border-red-600 text-red-600 px-2 py-1 rounded hover:bg-red-50">Excluir</button>
+                            <a href="{{ route('certificado.pdf', $certificado->idCertificado) }}" target="_blank"
+                                class="border border-green-600 text-green-600 px-2 py-1 rounded hover:bg-green-50">
+                                    PDF
+                            </a>
+
                     </td>
                 </tr>
             @empty

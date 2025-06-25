@@ -7,6 +7,7 @@ use App\Livewire\CursoManagement;
 use App\Livewire\CertificadoManagement;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\CertificadoPdfController;
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -27,6 +28,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/funcionarios', FuncionarioManagement::class)->name('funcionarios');
     Route::get('/cursos', CursoManagement::class)->name('cursos');
     Route::get('/certificados', CertificadoManagement::class)->name('certificados');
+
+    Route::get('/certificado/{id}/pdf', [CertificadoPdfController::class, 'gerar'])
+        ->name('certificado.pdf')
+        ->middleware('auth');
+
 });
 
 require __DIR__.'/auth.php';

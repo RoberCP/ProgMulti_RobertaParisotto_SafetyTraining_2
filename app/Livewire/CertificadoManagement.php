@@ -11,7 +11,8 @@ use Illuminate\Support\Facades\Auth;
 class CertificadoManagement extends Component
 {
     public $certificados;
-    public $idCertificado, $idCurso, $idFuncionario, $dataEmissao, $carga_horaria, $instrutor, $progresso;
+    public $idCertificado, $idCurso, $idFuncionario, $dataEmissao;
+    public $carga_horaria, $instrutor, $progresso;
     public $assinatura_instrutor = false, $assinatura_funcionario = false;
     public $isEdit = false;
     public $confirmingDelete = false;
@@ -39,6 +40,23 @@ class CertificadoManagement extends Component
         }
     }
 
+    public function updatedIdCurso($value)
+    {
+        if (empty($value)) {
+            $this->carga_horaria = '';
+            $this->instrutor = '';
+            $this->progresso = '';
+            return;
+        }
+
+        $curso = Curso::where('IdCurso', $value)->first();
+        if ($curso) {
+            $this->carga_horaria = $curso->cargaHora;
+            $this->instrutor = $curso->instrutor;
+            $this->progresso = 'Não iniciado';
+        }
+    }
+
     public function save()
     {
         if (!Auth::user()->is_admin) {
@@ -47,7 +65,7 @@ class CertificadoManagement extends Component
 
         $this->validate([
             'idCurso' => 'required|exists:cursos,IdCurso',
-            'idFuncionario' => 'required|exists:funcionarios,id',
+            'idFuncionario' => 'required|exists:funcionarios,idFuncionario',
             'dataEmissao' => 'required|date',
             'carga_horaria' => 'required|integer|min:1',
             'instrutor' => 'required|string|min:3',
